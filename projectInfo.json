@@ -1,0 +1,1 @@
+{"nombre": "agenteInteligente", "tipo": "informatica", "plataformas": ["py"], "license": null, "git": false, "gui": false, "3dDesigns": false, "readme": false, "changelog": false, "manual": false, "carpetas": ["Software/", "Software/py/", "env"], "archivos": ["projectInfo.json", "Software/py/main.py"], "comandosPost": ["python3 -m venv agenteInteligente/env/"]}
