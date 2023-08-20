@@ -1,6 +1,5 @@
 from random import randrange
-import sched, time, json
-from os import system
+import sched, time, json, threading, signal
 
 class Simulador:
     """
@@ -20,18 +19,28 @@ class Simulador:
     ## Problemas conocidos
     - Es posible que el scheduler sufra de time-drifting.
     """
-    scheduler = sched.scheduler(time.monotonic)
+
     def __init__(self, config):
 
+        # Manejo de la señal de finalización
+        signal.signal(signal.SIGINT, self.stop)
+        
         # Parámetros de simulación
+        ## Objetos de la simulación
         self.mundo = config["mundo"]
         self.agente = config["agente"]
+
+        # Configuración del scheduler
+        ## Definición del scheduler
+        self.scheduler = sched.scheduler(time.monotonic)
+
+        ## Definición de intervalos
         self.intervaloDeLimpieza = config["intervaloDeLimpieza"]
         self.retardoMaximoParaEnsuciar = config["retardoMaximoParaEnsuciar"]
 
-        # Definición de intervalos
-        self.scheduler.enter(0, 1, self.ensuciarHabitacion)
-        self.scheduler.enter(0, 2, self.limpiarHabitacion)
+        ## Definición de cola de ejecución del scheduler
+        self.scheduler.ensuciarEvent = self.scheduler.enter(0, 1, self.ensuciarHabitacion)
+        self.scheduler.limpiarEvent = self.scheduler.enter(0, 2, self.limpiarHabitacion)
 
     def __str__(self):
         infoMundo = json.loads(self.mundo.__str__())
@@ -46,20 +55,29 @@ class Simulador:
         """
         En un intervalo aleatorio entre o y `retardoMaximoParaEnsuciar` segundos, el simulador ensucia el mundo
         """
-        self.scheduler.enter(randrange(0, self.retardoMaximoParaEnsuciar), 1, self.ensuciarHabitacion)
+        self.scheduler.ensuciarEvent = self.scheduler.enter(randrange(0, self.retardoMaximoParaEnsuciar), 1, self.ensuciarHabitacion)
         self.mundo.ensuciarHabitacion()
-        print(self)
 
     def limpiarHabitacion(self):
         """
         En un intervalo de `intervaloDeLimpieza` segundos, el simulador limpia el mundo
         """
-        self.scheduler.enter(self.intervaloDeLimpieza, 2, self.limpiarHabitacion)
+        self.scheduler.limpiarEvent = self.scheduler.enter(self.intervaloDeLimpieza, 2, self.limpiarHabitacion)
         self.agente.run()
-        print(self)
 
     def run(self):
         """
-        Inicia el scheduler y con ello la simulación del sistema.
+        Inicia el scheduler en un hilo y con ello la simulación del sistema. Retorna el hilo donde el scheduler se ejecuta.
         """
-        self.scheduler.run()
+        schedulerThread = threading.Thread(target=self.scheduler.run)
+        schedulerThread.start()
+        return schedulerThread
+    
+    def stop(self, sigint, frame, endScript=True):
+        """
+        Detiene los eventos del scheduler. Si `endScript==True`, acaba el script.
+        """
+        self.scheduler.cancel(self.scheduler.ensuciarEvent)
+        self.scheduler.cancel(self.scheduler.limpiarEvent)
+        if endScript:
+            exit()
