@@ -1,9 +1,12 @@
+#!/usr/bin/python3
+
 from simulador import Simulador
 from ambiente import Mundo, Habitacion
 from agente import AgenteReactivoSimple as Agente
 
 from time import sleep
 from datetime import datetime
+from os import system
 
 # Configuración de mundo
 listaHabitaciones = [
@@ -37,6 +40,7 @@ sim = Simulador(configSim)
 # Inicio
 simThread = sim.run()
 while True:
+    system("clear")
     print(datetime.now())
     print(sim)
     sleep(0.5)
