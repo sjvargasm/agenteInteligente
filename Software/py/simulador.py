@@ -40,7 +40,7 @@ class Simulador:
 
         ## Definición de cola de ejecución del scheduler
         self.scheduler.ensuciarEvent = self.scheduler.enter(0, 1, self.ensuciarHabitacion)
-        self.scheduler.limpiarEvent = self.scheduler.enter(0, 2, self.limpiarHabitacion)
+        self.scheduler.agenteEvent = self.scheduler.enter(0, 2, self.runAgente)
 
     def __str__(self):
         infoMundo = json.loads(self.mundo.__str__())
@@ -58,11 +58,11 @@ class Simulador:
         self.scheduler.ensuciarEvent = self.scheduler.enter(randrange(0, self.retardoMaximoParaEnsuciar), 1, self.ensuciarHabitacion)
         self.mundo.ensuciarHabitacion()
 
-    def limpiarHabitacion(self):
+    def runAgente(self):
         """
         En un intervalo de `intervaloDeLimpieza` segundos, el simulador limpia el mundo
         """
-        self.scheduler.limpiarEvent = self.scheduler.enter(self.intervaloDeLimpieza, 2, self.limpiarHabitacion)
+        self.scheduler.agenteEvent = self.scheduler.enter(self.intervaloDeLimpieza, 2, self.runAgente)
         self.agente.run()
 
     def run(self):
@@ -78,6 +78,6 @@ class Simulador:
         Detiene los eventos del scheduler. Si `endScript==True`, acaba el script.
         """
         self.scheduler.cancel(self.scheduler.ensuciarEvent)
-        self.scheduler.cancel(self.scheduler.limpiarEvent)
+        self.scheduler.cancel(self.scheduler.agenteEvent)
         if endScript:
             exit()

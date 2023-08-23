@@ -13,7 +13,9 @@ listaHabitaciones = [
     Habitacion("Sala"),
     Habitacion("Cocina"),
     Habitacion("Comedor"),
-    Habitacion("Dormitorio")
+    Habitacion("Dormitorio"),
+    Habitacion("Sotano"),
+    Habitacion("Atico")
 ]
 mundo = Mundo(listaHabitaciones)
 
@@ -21,8 +23,8 @@ mundo = Mundo(listaHabitaciones)
 configAgent = {
     "nombre": "Wall-E",
     "mundo": mundo,
-    "rendimientoPorLimpiar": 4,
-    "rendimientoPorPaso": -1,
+    "rendimientoPorLimpiar": 3,
+    "rendimientoPorPaso": -2,
     "rendimientoPorCasa": -1000
 }
 agente = Agente(configAgent)
@@ -30,7 +32,7 @@ agente = Agente(configAgent)
 # Configuración de la simulación
 configSim = {
     "intervaloDeLimpieza": 2,
-    "retardoMaximoParaEnsuciar": 20,
+    "retardoMaximoParaEnsuciar": 5,
     "mundo": mundo,
     "agente": agente,
     "listaHabitaciones": listaHabitaciones
@@ -43,5 +45,4 @@ while True:
     system("clear")
     print(datetime.now())
     print(sim)
-    sleep(0.5)
-
+    sleep(1/20)
