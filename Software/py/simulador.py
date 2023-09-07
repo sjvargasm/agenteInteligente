@@ -5,16 +5,16 @@ class Simulador:
     """
     # Simulador del mundo
     ## Funcionamiento
-    El scheduler `scheduler` es el motor del mundo, cada ciertos intervalos, alguna acción ocurre:
-    - En un intervalo aleatorio, entre 0 y `retardoMaximoParaEnsuciar`, se ejecuta el método `mundo.ensuciarHabitacion()`
-    - En un intervalo de `intervaloDeLimpieza`, se ejecuta el método `agente.run()`
+    El scheduler `.scheduler` es el motor del mundo, cada ciertos intervalos, alguna acción ocurre:
+    - En un intervalo aleatorio, entre 0 y `.retardoMaximoParaEnsuciar`, se ejecuta el método `.mundo.ensuciarHabitacion()`
+    - En un intervalo de `.intervaloDeLimpieza`, se ejecuta el método `.agente.run()`
 
     ## Configuración
     Las configuraciones del simulador se reciben como un diccionario, parámetro del método constructor, con las siguientes claves:
     - `"mundo"`: Objeto `Mundo` que representa el mundo donde el agente se desenvuelve.
     - `"agente"`: Objeto `Agente` que representa el agente en cuestión.
-    - `"intervaloDeLimpieza"`: Intervalo en segundos cada cual se ejecuta `agente.run()`
-    - `"retardoMaximoParaEnsuciar"`: Tiempo máximo en segundos que puede tardar el simulador en ejecutar `mundo.ensuciarHabitacion()`
+    - `"intervaloDeLimpieza"`: Intervalo en segundos cada cual se ejecuta `.agente.run()`
+    - `"retardoMaximoParaEnsuciar"`: Tiempo máximo en segundos que puede tardar el simulador en ejecutar `.mundo.ensuciarHabitacion()`
 
     ## Problemas conocidos
     - Es posible que el scheduler sufra de time-drifting.
@@ -53,14 +53,14 @@ class Simulador:
 
     def ensuciarHabitacion(self):
         """
-        En un intervalo aleatorio entre o y `retardoMaximoParaEnsuciar` segundos, el simulador ensucia el mundo
+        En un intervalo aleatorio entre 0 y `.retardoMaximoParaEnsuciar` segundos, el simulador ensucia el mundo.
         """
         self.scheduler.ensuciarEvent = self.scheduler.enter(randrange(0, self.retardoMaximoParaEnsuciar), 1, self.ensuciarHabitacion)
         self.mundo.ensuciarHabitacion()
 
     def runAgente(self):
         """
-        En un intervalo de `intervaloDeLimpieza` segundos, el simulador limpia el mundo
+        En un intervalo de `.intervaloDeLimpieza` segundos, el simulador limpia el mundo.
         """
         self.scheduler.agenteEvent = self.scheduler.enter(self.intervaloDeLimpieza, 2, self.runAgente)
         self.agente.run()
